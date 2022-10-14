@@ -2,7 +2,7 @@
   <div class="text-center body">
     <main class="form-signin">
       <form>
-        <img class="mb-4" src="/docs/5.0/assets/brand/bootstrap-logo.svg" alt="" width="72" height="57">
+        <img class="mb-4" src="@/assets/logo.svg" alt="" width="150">
         <h1 class="h3 mb-3 fw-normal">Fazer login</h1>
 
         <div class="form-floating">
