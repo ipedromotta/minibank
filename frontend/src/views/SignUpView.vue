@@ -1,36 +1,40 @@
 <template>
   <div class="text-center body">
     <main class="form-signin">
-      <form class="space-between">
+      <form class="space-between" @submit.prevent="onSubmit">
         <img class="mb-4" src="@/assets/logo.svg" alt="" width="150">
         <h1 class="h3 mb-3 fw-normal">Cadastre-se</h1>
 
         <div class="form-floating mb-2">
-          <input type="text" maxlength="15" class="form-control" id="floatingInput" placeholder="seu-usuario">
-          <label for="floatingInput">Nome</label>
+          <input v-model="form.name" required type="text" maxlength="15" class="form-control" id="floatingName" placeholder="Seu nome">
+          <label for="floatingName">Nome</label>
         </div>
 
         <div class="form-floating mb-2">
-          <input type="email" maxlength="15" class="form-control" id="floatingInput" placeholder="seu-usuario">
-          <label for="floatingInput">Email</label>
+          <input v-model="form.email" required type="email" maxlength="15" class="form-control" id="floatingEmail" placeholder="email@exemplo.com">
+          <label for="floatingEmail">Email</label>
         </div>
 
         <div class="form-floating mb-2">
-          <input type="text" maxlength="15" class="form-control" id="floatingInput" placeholder="seu-usuario">
+          <input v-model="form.username" required type="text" maxlength="15" class="form-control" id="floatingInput" placeholder="seu-usuario">
           <label for="floatingInput">Usuário</label>
         </div>
 
         <div class="form-floating mb-2">
-          <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+          <input v-model="form.password" required type="password" class="form-control" id="floatingPassword" placeholder="senha">
           <label for="floatingPassword">Senha</label>
         </div>
 
         <div class="form-floating">
-          <input type="password" class="form-control" id="floatingPassword2" placeholder="senha">
+          <input v-model="form.password_confirm" required type="password" class="form-control" id="floatingPassword2" placeholder="confirme sua senha">
           <label for="floatingPassword2">Confirme sua senha</label>
         </div>
 
-        <button class="w-100 btn btn-lg btn-dark mt-5" type="submit">Cadastrar</button>
+        <div class="alert alert-danger mt-3" role="alert" v-if="errors.length">
+          <span v-for="error in errors" :key="error">{{ error }}</span>
+        </div>
+
+        <button :class="`w-100 btn btn-lg btn-dark ${errors.length?'mt-0': 'mt-5'}`" type="submit">Cadastrar</button>
         
         <div>
           <p class="mt-5">
@@ -43,6 +47,47 @@
 </template>
 
 <script setup>
+import axios from 'axios';
+import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+
+const router = useRouter()
+const errors = ref('')
+const form = ref({
+  first_name: '',
+  email: '',
+  username: '',
+  password: '',
+  password_confirm: '',
+})
+
+async function onSubmit() {
+  errors.value = ''
+
+  if (form.value.password !== form.value.password_confirm) {
+    errors.value = 'As senhas não são iguais. Tente novamente'
+  }
+
+  if (!errors.value.length) {
+    await axios.post('/api/v1/users/', form.value)
+    .then((res) => {
+      router.push('/login')
+    })
+    .catch((error) => {
+      if ( error.response ) {
+        for (const property in error.response.data) {
+          errors.value += `${error.response.data[property]}\n`
+        }
+
+        console.log(JSON.stringify(error.response.data))
+      } else if ( error.message ) {
+        errors.value = 'Algo deu errado. Por favor tente novamente.'
+
+        console.log(JSON.stringify(error))
+      }
+    })
+  }
+}
 
 </script>
 
@@ -65,22 +110,6 @@
   padding: 15px;
   margin: auto;
 }
-
-/* .form-signin .form-floating:focus-within {
-  z-index: 2;
-}
-
-.form-signin input[type="text"] {
-  margin-bottom: -1px;
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
-.form-signin input[type="password"] {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-} */
 
 .link {
   text-decoration: none;

@@ -20,6 +20,7 @@
         <div class="alert alert-danger" role="alert" v-if="errors.length">
           <span v-for="error in errors" :key="error">{{ error }}</span>
         </div>
+        
         <button class="w-100 btn btn-lg btn-dark" type="submit">Entrar</button>
         
         <div>
