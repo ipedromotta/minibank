@@ -11,7 +11,7 @@
         </div>
 
         <div class="form-floating mb-2">
-          <input v-model="form.email" required type="email" maxlength="15" class="form-control" id="floatingEmail" placeholder="email@exemplo.com">
+          <input v-model="form.email" required type="email" maxlength="50" class="form-control" id="floatingEmail" placeholder="email@exemplo.com">
           <label for="floatingEmail">Email</label>
         </div>
 
