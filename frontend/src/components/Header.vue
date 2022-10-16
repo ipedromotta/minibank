@@ -14,16 +14,31 @@
             <a class="nav-link" href="#">Extrato</a>
           </li>
         </ul>
-        <form class="d-flex">
+        <div class="d-flex">
           <p class="text-white-50 p-2 mb-0">Olá, Usuário</p>
           <p class="text-white-50 p-2 mb-0">Saldo: R$ 0,00</p>
-          <button class="btn btn-outline-light" type="submit">Sair</button>
-        </form>
+          <button @click="logout" class="btn btn-outline-light" type="button">Sair</button>
+        </div>
       </div>
     </div>
   </nav>
 </template>
 
 <script setup>
+import axios from 'axios';
+import { useRouter } from 'vue-router';
+import { usePageStore } from '../stores/page';
 
+
+const pageStore = usePageStore()
+const router = useRouter()
+
+function logout() {
+  axios.defaults.headers.common["Authorization"] = ""
+
+  localStorage.removeItem("token")
+
+  pageStore.removeToken()
+  router.push('/login')
+}
 </script>
