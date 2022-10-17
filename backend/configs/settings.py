@@ -41,7 +41,11 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
+    
+    'accounts', 
 ]
+
+AUTH_USER_MODEL = 'accounts.CustomUser'
 
 # CORS_ORIGIN_ALLOW_ALL = True
 
@@ -71,6 +75,13 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+}
+
+DJOSER = {
+    'SERIALIZERS': {
+         'user_create': 'accounts.serializers.UserRegistrationSerializer',
+         'current_user': 'accounts.serializers.UserRegistrationSerializer',
+    }
 }
 
 ROOT_URLCONF = 'configs.urls'
