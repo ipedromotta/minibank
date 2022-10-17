@@ -6,7 +6,7 @@
         <h1 class="h3 mb-3 fw-normal">Cadastre-se</h1>
 
         <div class="form-floating mb-2">
-          <input v-model="form.name" required type="text" maxlength="15" class="form-control" id="floatingName" placeholder="Seu nome">
+          <input v-model="form.first_name" required type="text" maxlength="15" class="form-control" id="floatingName" placeholder="Seu nome">
           <label for="floatingName">Nome</label>
         </div>
 

@@ -34,10 +34,16 @@ const pageStore = usePageStore()
 const router = useRouter()
 
 function logout() {
-  axios.defaults.headers.common["Authorization"] = ""
+  
+  const token = localStorage.getItem("token")
 
   localStorage.removeItem("token")
-
+  axios.post('/api/v1/token/logout/', token)
+    .catch((error) => {
+      console.log(error)
+    })
+  
+  axios.defaults.headers.common["Authorization"] = ""
   pageStore.removeToken()
   router.push('/login')
 }
