@@ -6,6 +6,12 @@ import { useRouter } from 'vue-router'
 export const usePageStore = defineStore('page', () => {
   const isAuthenticated = ref(false)
   const token = ref('')
+  const user = ref({
+    name: '',
+    email: '',
+    username: '',
+    balance: 0,
+  })
   const router = useRouter()
 
   function initializeStore() {
@@ -16,7 +22,8 @@ export const usePageStore = defineStore('page', () => {
 
       axios.get('/api/v1/users/me/')
         .then((res) => {
-          console.log(res)
+          user.value.name = res.data.first_name
+          user.value.balance = parseFloat(res.data.balance).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})
         })
         .catch((err) => {
           router.push('/login')
@@ -39,5 +46,5 @@ export const usePageStore = defineStore('page', () => {
     isAuthenticated.value = false
   }
 
-  return { initializeStore, isAuthenticated, setToken, removeToken }
+  return { user, initializeStore, isAuthenticated, setToken, removeToken }
 })

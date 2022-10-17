@@ -15,8 +15,8 @@
           </li>
         </ul>
         <div class="d-flex">
-          <p class="text-white-50 p-2 mb-0">Olá, Usuário</p>
-          <p class="text-white-50 p-2 mb-0">Saldo: R$ 0,00</p>
+          <p class="text-white-50 p-2 mb-0">Olá, {{ pageStore.user.name }}</p>
+          <p class="text-white-50 p-2 mb-0">Saldo: {{ pageStore.user.balance }}</p>
           <button @click="logout" class="btn btn-outline-light" type="button">Sair</button>
         </div>
       </div>

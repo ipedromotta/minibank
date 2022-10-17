@@ -64,6 +64,8 @@ function onSubmit() {
 
       const toPath = router.currentRoute.value.query.to || '/'
 
+      pageStore.initializeStore()
+
       router.push(toPath)
     })
     .catch((error) => {
