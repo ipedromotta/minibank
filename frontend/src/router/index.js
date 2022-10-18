@@ -1,16 +1,26 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { usePageStore } from '../stores/page'
 import HomeView from '@/views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
 import SignUpView from '@/views/SignUpView.vue'
-import { usePageStore } from '../stores/page'
+import BankStatementView from '@/views/BankStatementView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
+      alias: '/inicio',
       name: 'home',
       component: HomeView,
+      meta: {
+        requireLogin: true
+      }
+    },
+    {
+      path: '/extrato',
+      name: 'extrato',
+      component: BankStatementView,
       meta: {
         requireLogin: true
       }
