@@ -7,9 +7,8 @@
       Qual operação deseja fazer?
     </h4>
     <div class="col-sm-6 mx-auto mb-4">
-      <select v-model="tipoOperacao" class="form-select" aria-label="Tipo de operacao">
-        <option selected value="0">Selecione</option>
-        <option value="1">Deposito</option>
+      <select v-model="tipoOperacao" class="form-select form-select-lg" aria-label="Tipo de operacao">
+        <option selected value="1">Deposito</option>
         <option value="2">Saque</option>
         <option value="3">Transferencia</option>
       </select>
@@ -30,6 +29,6 @@ import Deposit from '@/components/Deposit.vue';
 import Withdraw from '@/components/Withdraw.vue';
 import Transfer from '@/components/Transfer.vue';
 
-const tipoOperacao = ref('0')
+const tipoOperacao = ref('1')
 
 </script>
