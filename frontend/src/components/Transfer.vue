@@ -21,6 +21,24 @@
 
     <button @click="handleClick" class="btn btn-lg btn-dark">Transferir</button>
   </div>
+  <!-- Modal -->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirmação de transferencia</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Tem certeza que deseja transferir <strong>{{ amountCurrency }}</strong> para a conta <strong>{{ accountNumber }}</strong> ?
+        </div>
+        <div class="modal-footer">
+          <button ref="btnFechar" type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button @click="handleConfirmClick($refs.btnFechar)" type="button" class="btn btn-dark">Fazer transferencia</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -50,10 +68,14 @@ function handleClick() {
   if (accountNumber.value === '') {
     errors.value = 'Digite o número da conta destinatária'
   }
-
   if (!errors.value.length) {
-    console.log("Procedimento pode prosseguir")
+    $('#staticBackdrop').modal('show')
   }
+}
+
+function handleConfirmClick(refs) {
+  console.log('Confirmação')
+  refs.click()
 }
 </script>
 

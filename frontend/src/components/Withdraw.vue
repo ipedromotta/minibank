@@ -17,6 +17,24 @@
 
     <button @click="handleClick" class="btn btn-lg btn-dark">Sacar</button>
   </div>
+  <!-- Modal -->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirmação de saque</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Tem certeza que deseja sacar <strong>{{ amountCurrency }}</strong> ?
+        </div>
+        <div class="modal-footer">
+          <button ref="btnFechar" type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button @click="handleConfirmClick($refs.btnFechar)" type="button" class="btn btn-dark">Fazer saque</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
@@ -42,6 +60,14 @@ function handleClick() {
   if (!password.value.length) {
     errors.value = 'Digite sua senha'
   }
+  if (!errors.value.length) {
+    $('#staticBackdrop').modal('show')
+  }
+}
+
+function handleConfirmClick(refs) {
+  console.log('Confirmação')
+  refs.click()
 }
 </script>
 

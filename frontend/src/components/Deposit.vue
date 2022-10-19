@@ -11,7 +11,25 @@
       <span v-for="error in errors" :key="error">{{ error }}</span>
     </div>
 
-    <button @click="handleClick" class="btn btn-lg btn-dark">Depositar</button>
+    <button @click="handleClick" class="btn btn-lg btn-dark" >Depositar</button>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">Confirmação de depósito</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Tem certeza que deseja depositar <strong>{{ amountCurrency }}</strong> ?
+        </div>
+        <div class="modal-footer">
+          <button ref="btnFechar" type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button @click="handleConfirmClick($refs.btnFechar)" type="button" class="btn btn-dark">Fazer depósito</button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -31,9 +49,20 @@ const amountCurrency = computed(() => {
 
 function handleClick() {
   errors.value = ''
+
   if (!amount.value) {
     errors.value = 'Digite algum valor antes de continuar'
   }
+
+  if (!errors.value.length) {
+    $('#staticBackdrop').modal('show')
+  }
+
+}
+
+function handleConfirmClick(refs) {
+  console.log('Confirmação')
+  refs.click()
 }
 
 </script>
