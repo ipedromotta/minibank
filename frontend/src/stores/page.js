@@ -13,6 +13,7 @@ export const usePageStore = defineStore('page', () => {
     balance: 0,
   })
   const router = useRouter()
+  const passwordIsValid = ref(false)
 
   function initializeStore() {
     if (localStorage.getItem('token')) {
@@ -23,7 +24,9 @@ export const usePageStore = defineStore('page', () => {
       axios.get('/api/v1/users/me/')
         .then((res) => {
           user.value.name = res.data.first_name
-          user.value.balance = parseFloat(res.data.balance).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})
+          user.value.username = res.data.username
+          user.value.email = res.data.email
+          user.value.balance = res.data.balance
         })
         .catch((err) => {
           router.push('/login')
@@ -46,5 +49,21 @@ export const usePageStore = defineStore('page', () => {
     isAuthenticated.value = false
   }
 
-  return { user, initializeStore, isAuthenticated, setToken, removeToken }
+
+  async function verifyPassword(password) {
+    const password_ = {
+      new_password: password,
+      re_new_password: password,
+      current_password: password
+    }
+    await axios.post('/api/v1/users/set_password/', password_)
+      .then((res) => {
+        passwordIsValid.value = true
+      })
+      .catch((error) => {
+        passwordIsValid.value = false
+      })
+  }
+
+  return { user, initializeStore, isAuthenticated, setToken, removeToken, verifyPassword, passwordIsValid }
 })

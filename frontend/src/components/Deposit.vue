@@ -34,10 +34,13 @@
 </template>
 
 <script setup>
+import axios from 'axios';
 import { computed, ref } from 'vue';
+import { usePageStore } from '../stores/page';
 
 const amount = ref()
 const errors = ref('')
+const pageStore = usePageStore()
 
 const amountCurrency = computed(() => {
   errors.value = ''
@@ -53,15 +56,19 @@ function handleClick() {
   if (!amount.value) {
     errors.value = 'Digite algum valor antes de continuar'
   }
-
   if (!errors.value.length) {
     $('#staticBackdrop').modal('show')
   }
-
 }
 
 function handleConfirmClick(refs) {
-  console.log('Confirmação')
+  pageStore.user.balance = (parseFloat(pageStore.user.balance) + amount.value).toFixed(2)
+
+  axios.put('/api/v1/users/me/', pageStore.user)
+    .catch((error) => {
+      console.log(error)
+    })
+
   refs.click()
 }
 

@@ -38,11 +38,14 @@
 </template>
 
 <script setup>
+import axios from 'axios';
 import { computed, ref } from 'vue';
+import { usePageStore } from '../stores/page';
 
 const amount = ref()
 const errors = ref('')
 const password = ref('')
+const pageStore = usePageStore()
 
 const amountCurrency = computed(() => {
   errors.value = ''
@@ -52,13 +55,19 @@ const amountCurrency = computed(() => {
   return parseFloat(amount.value).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})
 })
 
-function handleClick() {
+async function handleClick() {
   errors.value = ''
   if (!amount.value) {
     errors.value = 'Digite algum valor antes de continuar'
   }
   if (!password.value.length) {
     errors.value = 'Digite sua senha'
+  } else {
+    await pageStore.verifyPassword(password.value)
+
+    if (!pageStore.passwordIsValid) {
+      errors.value = 'Senha incorreta'
+    }
   }
   if (!errors.value.length) {
     $('#staticBackdrop').modal('show')
@@ -66,7 +75,14 @@ function handleClick() {
 }
 
 function handleConfirmClick(refs) {
-  console.log('Confirmação')
+  pageStore.user.balance = (parseFloat(pageStore.user.balance) - amount.value).toFixed(2)
+
+  axios.put('/api/v1/users/me/', pageStore.user)
+    .catch((error) => {
+      console.log(error)
+    })
+
+
   refs.click()
 }
 </script>
