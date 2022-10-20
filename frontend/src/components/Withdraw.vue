@@ -69,6 +69,10 @@ async function handleClick() {
       errors.value = 'Senha incorreta'
     }
   }
+  if ( pageStore.user.balance < amount.value ) {
+    errors.value = 'Saldo insuficiente'
+  }
+
   if (!errors.value.length) {
     $('#staticBackdrop').modal('show')
   }
