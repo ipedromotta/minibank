@@ -3,7 +3,7 @@
     <h2>Deposito</h2>
 
     <div class="mb-3 mt-3">
-      <input v-model="amount.amount" type="number" class="form-control form-control-lg" id="amount" placeholder="R$ 0,00">
+      <input v-model="amount.amount" type="number" class="form-control form-control-lg" id="amount" placeholder="R$ 0,00" min="0">
       <label for="amount" class="form-label mt-3 text">Valor do deposito {{ amountCurrency }}</label>
     </div>
 
