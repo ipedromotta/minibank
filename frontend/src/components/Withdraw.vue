@@ -7,12 +7,16 @@
       <label for="floatingPassword">Digite sua senha</label>
     </div>
     <div class="mb-3 mt-3">
-      <input v-model="amount" type="number" class="form-control form-control-lg" id="amount" placeholder="R$ 0,00">
+      <input v-model="amount.amount" type="number" class="form-control form-control-lg" id="amount" placeholder="R$ 0,00">
       <label for="amount" class="form-label mt-3 text">Valor do saque {{ amountCurrency }}</label>
     </div>
 
     <div class="alert alert-danger" role="alert" v-if="errors.length">
-      <span v-for="error in errors" :key="error">{{ error }}</span>
+      <span v-for="error, index in errors" :key="index">{{ error }}</span>
+    </div>
+
+    <div class="alert alert-success" role="alert" v-if="success.length">
+      <span v-for="msg, index in success" :key="index">{{ msg }}</span>
     </div>
 
     <button @click="handleClick" class="btn btn-lg btn-dark">Sacar</button>
@@ -42,22 +46,25 @@ import axios from 'axios';
 import { computed, ref } from 'vue';
 import { usePageStore } from '../stores/page';
 
-const amount = ref()
+const amount = ref({
+  amount: ''
+})
 const errors = ref('')
+const success = ref('')
 const password = ref('')
 const pageStore = usePageStore()
 
 const amountCurrency = computed(() => {
   errors.value = ''
-  if (!amount.value) {
+  if (!amount.value.amount) {
     return parseFloat(0).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})
   }
-  return parseFloat(amount.value).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})
+  return parseFloat(amount.value.amount).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})
 })
 
 async function handleClick() {
   errors.value = ''
-  if (!amount.value) {
+  if (!amount.value.amount) {
     errors.value = 'Digite algum valor antes de continuar'
   }
   if (!password.value.length) {
@@ -69,7 +76,7 @@ async function handleClick() {
       errors.value = 'Senha incorreta'
     }
   }
-  if ( pageStore.user.balance < amount.value ) {
+  if ( pageStore.user.balance < amount.value.amount ) {
     errors.value = 'Saldo insuficiente'
   }
 
@@ -79,15 +86,30 @@ async function handleClick() {
 }
 
 function handleConfirmClick(refs) {
-  pageStore.user.balance = (parseFloat(pageStore.user.balance) - amount.value).toFixed(2)
-
-  axios.put('/api/v1/users/me/', pageStore.user)
+  axios.post('/api/v1/withdraw/', amount.value)
+    .then((res) => {
+      if (res.data.status === 200) {
+        pageStore.user.balance = parseFloat(res.data.accountBalance).toFixed(2)
+        success.value = res.data.response
+        clearForm()
+        setTimeout(() => {
+          success.value = ''
+        }, 2500)
+      } else {
+        errors.value = res.data.response
+      }
+    })
     .catch((error) => {
       console.log(error)
     })
 
 
   refs.click()
+
+function clearForm() {
+  amount.value.amount = ''
+  password.value = ''
+}
 }
 </script>
 
