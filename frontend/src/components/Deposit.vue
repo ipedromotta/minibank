@@ -63,6 +63,9 @@ function handleClick() {
   if (!amount.value.amount) {
     errors.value = 'Digite algum valor antes de continuar'
   }
+  if(amount.value.amount < 0) {
+    errors.value = 'Digite um valor positivo'
+  }
   if (!errors.value.length) {
     $('#staticBackdrop').modal('show')
   }

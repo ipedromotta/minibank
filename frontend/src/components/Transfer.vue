@@ -72,6 +72,9 @@ async function handleClick() {
   if (!transferInfo.value.amount) {
     errors.value = 'Digite algum valor antes de continuar'
   }
+  if (transferInfo.value.amount < 0) {
+    errors.value = 'Digite um valor positivo'
+  } 
   if (!password.value.length) {
     errors.value = 'Digite sua senha'
   } else {
