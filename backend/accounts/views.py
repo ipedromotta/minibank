@@ -37,7 +37,7 @@ def withdraw(request):
         amount = request.data.get('amount', None)
         if amount and username:
             user = CustomUser.objects.get(username=username)
-            if user.balance < Decimal(amount):
+            if user.balance < abs(Decimal(amount)):
                 message = 'Saldo insuficiente'
                 status = 401
             else:
@@ -69,7 +69,7 @@ def transfer(request):
             user = CustomUser.objects.get(username=username)
             user_to = CustomUser.objects.get(username=username_to)
 
-            if user.balance < Decimal(amount):
+            if user.balance < abs(Decimal(amount)):
                 message = 'Saldo insuficiente'
                 status = 401
             else:
