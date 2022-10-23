@@ -5,7 +5,8 @@ from django.db import transaction
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 
-from .models import CustomUser
+from .models import CustomUser, Transactions
+from .serializers import TransactionsSerializer
 
 
 @api_view(['POST'])
@@ -20,6 +21,8 @@ def deposit(request):
             user.save()
             message = 'Deposito realizado com sucesso'
             status = 200
+            
+            Transactions().create_transaction(user, amount, 'deposit')
         else:
             message = 'Algo deu errado'
             status = 500
@@ -45,6 +48,8 @@ def withdraw(request):
                 user.save()
                 message = 'Saque realizado com sucesso'
                 status = 200
+                
+                Transactions().create_transaction(user, amount, 'withdraw')
         else:
             message = 'Algo deu errado'
             status = 500
@@ -80,6 +85,9 @@ def transfer(request):
                     user_to.balance += abs(Decimal(amount))
                     user_to.save()
                     
+                    Transactions().create_transaction(user, amount, 'transfer')
+                    Transactions().create_transaction(user_to, amount, 'deposit')
+                    
                     message = 'Transferencia realizada com sucesso'
                     status = 200
         else:
@@ -91,3 +99,11 @@ def transfer(request):
     
     return Response({"status": status, "response": message, "accountBalance": user.balance if user else None})
     
+@api_view(['GET'])
+def get_transactions(request):
+    username = request.user
+    user = CustomUser.objects.get(username=username)
+    transactions = Transactions.objects.filter(user=user)
+    serializer = TransactionsSerializer(transactions, many=True)
+    
+    return Response(serializer.data)
