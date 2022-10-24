@@ -86,6 +86,9 @@ async function handleClick() {
   if (transferInfo.value.username_to === '') {
     errors.value = 'Digite o usuario da conta destinatária'
   }
+  if ( pageStore.user.balance < transferInfo.value.amount ) {
+    errors.value = 'Saldo insuficiente'
+  }
   if (!errors.value.length) {
     $('#staticBackdrop').modal('show')
   }
