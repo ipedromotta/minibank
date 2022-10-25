@@ -3,6 +3,7 @@ from datetime import datetime
 
 from django.db import transaction
 
+from rest_framework import status as statusEnum
 from rest_framework.response import Response
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 
@@ -21,15 +22,15 @@ def deposit(request):
             user.balance += abs(Decimal(amount))
             user.save()
             message = 'Deposito realizado com sucesso'
-            status = 200
+            status = statusEnum.HTTP_200_OK
             
             Transactions().create_transaction(user, amount, 'deposit')
         else:
             message = 'Algo deu errado'
-            status = 500
+            status = statusEnum.HTTP_500_INTERNAL_SERVER_ERROR
     except:
         message = 'Algo deu errado'
-        status = 500
+        status = statusEnum.HTTP_500_INTERNAL_SERVER_ERROR
     
     return Response({"status": status, "response": message, "accountBalance": user.balance if user else None})
 
@@ -43,20 +44,20 @@ def withdraw(request):
             user = CustomUser.objects.get(username=username)
             if user.balance < abs(Decimal(amount)):
                 message = 'Saldo insuficiente'
-                status = 401
+                status = statusEnum.HTTP_401_UNAUTHORIZED
             else:
                 user.balance -= abs(Decimal(amount))
                 user.save()
                 message = 'Saque realizado com sucesso'
-                status = 200
+                status = statusEnum.HTTP_200_OK
                 
                 Transactions().create_transaction(user, amount, 'withdraw')
         else:
             message = 'Algo deu errado'
-            status = 500
+            status = statusEnum.HTTP_500_INTERNAL_SERVER_ERROR
     except:
         message = 'Algo deu errado'
-        status = 500
+        status = statusEnum.HTTP_500_INTERNAL_SERVER_ERROR
                 
     return Response({"status": status, "response": message, "accountBalance": user.balance if user else None})
 
@@ -77,7 +78,7 @@ def transfer(request):
 
             if user.balance < abs(Decimal(amount)):
                 message = 'Saldo insuficiente'
-                status = 401
+                status = statusEnum.HTTP_401_UNAUTHORIZED
             else:
                 with transaction.atomic():
                     user.balance -= abs(Decimal(amount))
@@ -90,13 +91,13 @@ def transfer(request):
                     Transactions().create_transaction(user_to, amount, 'deposit')
                     
                     message = 'Transferencia realizada com sucesso'
-                    status = 200
+                    status = statusEnum.HTTP_200_OK
         else:
             message = 'Algo deu errado'
-            status = 500
+            status = statusEnum.HTTP_500_INTERNAL_SERVER_ERROR
     except:
         message = 'Algo deu errado' if user_to is not None else 'Usuario destino não existe'
-        status = 500
+        status = statusEnum.HTTP_500_INTERNAL_SERVER_ERROR
     
     return Response({"status": status, "response": message, "accountBalance": user.balance if user else None})
     
