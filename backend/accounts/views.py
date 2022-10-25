@@ -1,4 +1,5 @@
 from decimal import Decimal
+from datetime import datetime
 
 from django.db import transaction
 
@@ -99,11 +100,13 @@ def transfer(request):
     
     return Response({"status": status, "response": message, "accountBalance": user.balance if user else None})
     
-@api_view(['GET'])
+@api_view(['POST'])
 def get_transactions(request):
     username = request.user
+    date = request.data.get('date', datetime.now().strftime('%Y-%m-%d'))
+    
     user = CustomUser.objects.get(username=username)
-    transactions = Transactions.objects.filter(user=user)
+    transactions = Transactions.objects.filter(user=user, created_at__gte=f'{date} 00:00:00', created_at__lte=f'{date} 23:59:59')
     serializer = TransactionsSerializer(transactions, many=True)
     
     return Response(serializer.data)
