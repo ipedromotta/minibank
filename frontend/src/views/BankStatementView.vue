@@ -2,7 +2,7 @@
   <div class="container mt-3">
     <h1 class="text-center">Extrato</h1>
       <label for="startDate">
-        <input id="startDate" :class="`form-control ${!currentToSearch.date.length? 'border border-danger': ''}`" type="date" v-model="currentToSearch.date" />
+        <input id="startDate" :class="`form-control ${!currentToSearch.date.length? 'border border-danger': ''}`" type="date" :max="currentToSearch.date" v-model="currentToSearch.date" />
       </label>
       <button @click="search" :class="`btn btn-secondary mx-2 mb-1 ${!currentToSearch.date.length? 'disabled': ''}`">Consultar</button>
     <table class="table table-striped table-hover table-dark mt-3" v-if="info.length">
