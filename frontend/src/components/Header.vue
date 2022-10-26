@@ -14,6 +14,9 @@
           <li class="nav-item">
             <RouterLink to="/extrato" :class="`nav-link ${router.currentRoute.value.name === 'extrato'? 'active': ''}`">Extrato</RouterLink>
           </li>
+          <li class="nav-item">
+            <RouterLink to="/minha-conta" :class="`nav-link ${router.currentRoute.value.name === 'minha-conta'? 'active': ''}`">Minha conta</RouterLink>
+          </li>
         </ul>
         <div class="d-flex">
           <p class="text-white-50 p-2 mb-0">Olá, {{ pageStore.user.name }}</p>

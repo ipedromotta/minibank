@@ -4,6 +4,7 @@ import HomeView from '@/views/HomeView.vue'
 import LoginView from '@/views/LoginView.vue'
 import SignUpView from '@/views/SignUpView.vue'
 import BankStatementView from '@/views/BankStatementView.vue'
+import MyAccountView from '@/views/MyAccountView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,6 +22,14 @@ const router = createRouter({
       path: '/extrato',
       name: 'extrato',
       component: BankStatementView,
+      meta: {
+        requireLogin: true
+      }
+    },
+    {
+      path: '/minha-conta',
+      name: 'minha-conta',
+      component: MyAccountView,
       meta: {
         requireLogin: true
       }
