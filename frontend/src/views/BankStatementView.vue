@@ -2,7 +2,7 @@
   <div class="container mt-3">
     <h1 class="text-center">Extrato</h1>
       <label for="startDate">
-        <input id="startDate" :class="`form-control ${!currentToSearch.date.length? 'border border-danger': ''}`" type="date" :max="currentToSearch.date" v-model="currentToSearch.date" />
+        <input id="startDate" :class="`form-control ${!currentToSearch.date.length? 'border border-danger': ''}`" type="date" :max="currentDate" v-model="currentToSearch.date" />
       </label>
       <button @click="search" :class="`btn btn-secondary mx-2 mb-1 ${!currentToSearch.date.length? 'disabled': ''}`">Consultar</button>
     <table class="table table-striped table-hover table-dark mt-3" v-if="info.length">
@@ -33,6 +33,7 @@ import { onMounted, ref } from 'vue';
 
 
 const info = ref([])
+const currentDate = ref('')
 const currentToSearch = ref({
   date: ''
 })
@@ -84,8 +85,9 @@ function translateType(type) {
 }
 
 function getToday() {
-  let date = new Date()
-  currentToSearch.value.date = `${to2Decimal(date.getFullYear())}-${to2Decimal(date.getMonth() + 1)}-${to2Decimal(date.getDate())}` 
+  currentDate.value = new Date()
+  currentToSearch.value.date = `${to2Decimal(currentDate.value.getFullYear())}-${to2Decimal(currentDate.value.getMonth() + 1)}-${to2Decimal(currentDate.value.getDate())}` 
+  currentDate.value = currentToSearch.value.date
 }
 
 function search() {
