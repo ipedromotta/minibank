@@ -24,7 +24,7 @@
       <div class="col-12" v-else>
         <div class="btn-group" role="group">
           <button @click="enableForm(), setForm()" type="button" class="btn btn-secondary">Cancelar</button>
-          <button type="button" class="btn btn-dark"  data-bs-toggle="modal" data-bs-target="#changeModal">Salvar Alterações</button>
+          <button type="button" class="btn btn-dark"  @click="validateForm">Salvar Alterações</button>
         </div>
       </div>
 
@@ -142,6 +142,17 @@ function setForm() {
   usernameSets.value.email = pageStore.user.email
   usernameSets.value.name = pageStore.user.name
   usernameSets.value.current_password = ''
+}
+
+function validateForm() {
+  if (!usernameSets.value.username || !usernameSets.value.name || !usernameSets.value.email) {
+    errors.value = "Preencha todos os campos"
+    setTimeout(() => {
+      errors.value = ''
+    }, 2500)
+    return
+  }
+  $('#changeModal').modal('show')
 }
 
 onMounted(() => {
