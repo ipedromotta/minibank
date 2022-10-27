@@ -132,7 +132,7 @@ def alter_user(request):
             else:
                 return Response({"status": statusEnum.HTTP_401_UNAUTHORIZED, "response": "Senha incorreta"})
         else:
-            return Response({"status": statusEnum.HTTP_500_INTERNAL_SERVER_ERROR, "response": "Algo deu errado"})
+            return Response({"status": statusEnum.HTTP_500_INTERNAL_SERVER_ERROR, "response": "Preencha todos os campos"})
         
     except:
         return Response({"status": statusEnum.HTTP_500_INTERNAL_SERVER_ERROR, "response": "Algo deu errado"})
