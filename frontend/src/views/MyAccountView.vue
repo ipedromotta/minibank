@@ -36,7 +36,7 @@
       </div>
     </form>
 
-    <div class="border border-danger w-25 mx-auto p-2 mt-5">
+    <div class="border border-danger w-50 mx-auto p-2 mt-5">
       <p class="text-danger fw-bold fs-5">Zona de perigo</p>
       <div class="btn-group" role="group">
         <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#passwordModal">Alterar senha</button>
