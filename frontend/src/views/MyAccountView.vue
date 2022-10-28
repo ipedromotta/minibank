@@ -84,13 +84,18 @@
           
           <div class="col-12">
             <label for="inputPassword" class="form-label">Digite sua senha</label>
-            <input v-model="usernameSets.current_password" :disabled="disableForm" type="password" class="form-control" id="inputPassword">
+            <input v-model="usernameSets.current_password" type="password" class="form-control" id="inputPassword">
           </div>
 
         </div>
+
+        <div v-if="errors.length" class="alert alert-danger w-75 mx-auto text-center" role="alert">
+          {{ errors }}
+        </div>
+
         <div class="modal-footer">
-          <button ref="closeModal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button @click="updateUser($refs.closeModal)" type="button" class="btn btn-dark">Confirmar</button>
+          <button ref="closeChangeModal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button @click="updateUser($refs.closeChangeModal)" type="button" class="btn btn-dark">Confirmar</button>
         </div>
       </div>
     </div>
@@ -167,14 +172,14 @@ function updateUser(closeModal) {
       success.value = res.data.response
       pageStore.initializeStore()
       usernameSets.value.current_password = ''
+      closeModal.click()
     } else {
       errors.value = res.data.response
-      setForm()
+
     }
   })
   .catch((error) => {
     errors.value = "Algo deu errado!"
-    setForm()
     console.log(error.response.data)
   })
   setTimeout(() => {
@@ -182,8 +187,9 @@ function updateUser(closeModal) {
     success.value = ''
   }, 2500)
 
-  closeModal.click()
-  disableForm.value = true
+  if (!errors.value) {
+    disableForm.value = true
+  }
 }
 
 function enableForm() {
