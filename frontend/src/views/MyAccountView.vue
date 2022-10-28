@@ -54,11 +54,19 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          Tem certeza que deseja excluir a sua conta?
+
+          <div class="col-12">
+            <label for="deletePassword" class="form-label">Digite sua senha</label>
+            <input v-model="deletePassword.current_password" type="password" class="form-control" id="deletePassword">
+          </div>
+          
+        </div>
+        <div v-if="errors.length" class="alert alert-danger w-75 mx-auto text-center" role="alert">
+          {{ errors }}
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-          <button type="button" class="btn btn-danger">Confirmar exclusão</button>
+          <button @click="setDeleteForm" ref="closeDeleteModal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" @click="deleteUser" class="btn btn-danger">Confirmar exclusão</button>
         </div>
       </div>
     </div>
@@ -128,6 +136,7 @@
 <script setup>
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { usePageStore } from '../stores/page';
 
 
@@ -135,6 +144,10 @@ const pageStore = usePageStore()
 const disableForm = ref(true)
 const success = ref('')
 const errors = ref('')
+const router = useRouter()
+const deletePassword = ref({
+  current_password: ''
+})
 const usernameSets = ref({
   username: '',
   email: '',
@@ -203,6 +216,10 @@ function updatePassword(closeModal) {
     errors.value = 'Senhas não correspondem'
     return
   }
+  if (!passwordSets.value.new_password || !passwordSets.value.re_new_password || !passwordSets.value.current_password) {
+    errors.value = 'Preencha todos os campos'
+    return
+  }
 
   axios.post('/api/v1/users/set_password/', passwordSets.value)
     .then((res) => {
@@ -229,6 +246,31 @@ function setPasswordForm() {
   passwordSets.value.re_new_password = ''
   passwordSets.value.current_password = ''
   errors.value = ''
+}
+
+function deleteUser() {
+  if (!deletePassword.value.current_password.length) {
+    errors.value = 'Digite sua senha'
+    return
+  }
+  axios.delete('/api/v1/users/me/', {data:deletePassword.value})
+  .then((res) => {
+    router.go()
+  })
+  .catch((error) => {
+    if (error.response) {
+      for (const property in error.response.data) {
+        errors.value = `${error.response.data[property]}`
+      }
+    } else {
+      errors.value = 'Algo deu errado. Por favor tente novamente'
+    }
+  })
+}
+
+function setDeleteForm() {
+  errors.value = ''
+  deletePassword.value.current_password = ''
 }
 
 onMounted(() => {
