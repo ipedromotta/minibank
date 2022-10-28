@@ -23,7 +23,7 @@
       </div>
       <div class="col-12" v-else>
         <div class="btn-group" role="group">
-          <button @click="enableForm(), setForm()" type="button" class="btn btn-secondary">Cancelar</button>
+          <button @click="enableForm" type="button" class="btn btn-secondary">Cancelar</button>
           <button type="button" class="btn btn-dark"  @click="validateForm">Salvar Alterações</button>
         </div>
       </div>
@@ -39,7 +39,7 @@
     <div class="border border-danger w-25 mx-auto p-2 mt-5">
       <p class="text-danger fw-bold fs-5">Zona de perigo</p>
       <div class="btn-group" role="group">
-        <button type="button" class="btn btn-dark">Alterar senha</button>
+        <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#passwordModal">Alterar senha</button>
         <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">Excluir conta</button>
       </div>
     </div>
@@ -88,6 +88,41 @@
     </div>
   </div>
 
+  <!-- Password Modal -->
+  <div class="modal fade" id="passwordModal" tabindex="-1" aria-labelledby="passwordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="passwordModalLabel">Alterar senha</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          
+          <div class="col-12">
+            <label for="currentPassword" class="form-label">Senha atual</label>
+            <input v-model="passwordSets.current_password" type="password" class="form-control" id="currentPassword">
+          </div>
+          <div class="col-12 mt-2">
+            <label for="newPassword" class="form-label">Digite sua nova senha</label>
+            <input v-model="passwordSets.new_password" type="password" class="form-control" id="newPassword">
+          </div>
+          <div class="col-12 mt-2">
+            <label for="reNewPassword" class="form-label">Confirme sua nova senha</label>
+            <input v-model="passwordSets.re_new_password" type="password" class="form-control" id="reNewPassword">
+          </div>
+
+        </div>
+        <div v-if="errors.length" class="alert alert-danger w-75 mx-auto text-center" role="alert">
+          {{ errors }}
+        </div>
+        <div class="modal-footer">
+          <button @click="setPasswordForm" ref="closeModal" type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button @click="updatePassword($refs.closeModal)" type="button" class="btn btn-dark">Confirmar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </template>
 
 <script setup>
@@ -104,6 +139,11 @@ const usernameSets = ref({
   username: '',
   email: '',
   name: '',
+  current_password: ''
+})
+const passwordSets = ref({
+  new_password: '',
+  re_new_password: '',
   current_password: ''
 })
 
@@ -135,6 +175,7 @@ function updateUser(closeModal) {
 
 function enableForm() {
   disableForm.value = !disableForm.value
+  setForm()
 }
 
 function setForm() {
@@ -153,6 +194,41 @@ function validateForm() {
     return
   }
   $('#changeModal').modal('show')
+}
+
+function updatePassword(closeModal) {
+  console.log(passwordSets.value)
+
+  if (passwordSets.value.new_password !== passwordSets.value.re_new_password) {
+    errors.value = 'Senhas não correspondem'
+    return
+  }
+
+  axios.post('/api/v1/users/set_password/', passwordSets.value)
+    .then((res) => {
+      success.value = 'Senha alterada com sucesso'
+      closeModal.click()
+      setTimeout(() =>{
+        success.value = ''
+      }, 2500)
+    })
+    .catch((error) => {
+      if (error.response) {
+        for (const property in error.response.data) {
+          errors.value = `${error.response.data[property]}`
+        }
+      } else {
+        errors.value = 'Algo deu errado. Por favor tente novamente'
+      }
+    })
+
+}
+
+function setPasswordForm() {
+  passwordSets.value.new_password = ''
+  passwordSets.value.re_new_password = ''
+  passwordSets.value.current_password = ''
+  errors.value = ''
 }
 
 onMounted(() => {
