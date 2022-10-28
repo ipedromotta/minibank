@@ -166,6 +166,11 @@ const passwordSets = ref({
 })
 
 function updateUser(closeModal) {
+  if (!usernameSets.value.current_password) {
+    errors.value = 'Coloque sua senha'
+    return
+  }
+
   axios.post(`/api/v1/update/`,  usernameSets.value)
   .then((res) => {
     if (res.data.status === 200) {
