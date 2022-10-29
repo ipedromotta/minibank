@@ -7,7 +7,7 @@
       <label for="username_to">Usuário da conta destinatária</label>
     </div>
     <div class="form-floating">
-      <input v-model="password" @input="errors = ''" type="password" class="form-control" id="floatingPassword" placeholder="senha">
+      <input v-model="transferInfo.current_password" @input="errors = ''" type="password" class="form-control" id="floatingPassword" placeholder="senha">
       <label for="floatingPassword">Digite sua senha</label>
     </div>
     <div class="mb-3 mt-3">
@@ -52,11 +52,11 @@ import { usePageStore } from '../stores/page';
 
 const errors = ref('')
 const success = ref('')
-const password = ref('')
 const pageStore = usePageStore()
 const transferInfo = ref({
   username_to: '',
-  amount: ''
+  amount: '',
+  current_password: ''
 })
 
 const amountCurrency = computed(() => {
@@ -75,14 +75,9 @@ async function handleClick() {
   if (transferInfo.value.amount < 0) {
     errors.value = 'Digite um valor positivo'
   } 
-  if (!password.value.length) {
+  if (!transferInfo.value.current_password) {
     errors.value = 'Digite sua senha'
-  } else {
-    await pageStore.verifyPassword(password.value)
-    if (!pageStore.passwordIsValid) {
-      errors.value = 'Senha incorreta'
-    }
-  }
+  } 
   if (transferInfo.value.username_to === '') {
     errors.value = 'Digite o usuario da conta destinatária'
   }
@@ -118,7 +113,7 @@ function handleConfirmClick(refs) {
 function clearForm() {
   transferInfo.value.amount = ''
   transferInfo.value.username_to = ''
-  password.value = ''
+  transferInfo.value.current_password = ''
 }
 
 </script>

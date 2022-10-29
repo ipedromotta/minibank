@@ -3,11 +3,11 @@
     <h2>Saque</h2>
 
     <div class="form-floating">
-      <input v-model="password" @input="errors = ''" type="password" class="form-control" id="floatingPassword" placeholder="senha">
+      <input v-model="form.current_password" @input="errors = ''" type="password" class="form-control" id="floatingPassword" placeholder="senha">
       <label for="floatingPassword">Digite sua senha</label>
     </div>
     <div class="mb-3 mt-3">
-      <input v-model="amount.amount" type="number" class="form-control form-control-lg" id="amount" placeholder="R$ 0,00" min="0">
+      <input v-model="form.amount" type="number" class="form-control form-control-lg" id="amount" placeholder="R$ 0,00" min="0">
       <label for="amount" class="form-label mt-3 text">Valor do saque {{ amountCurrency }}</label>
     </div>
 
@@ -46,40 +46,34 @@ import axios from 'axios';
 import { computed, ref } from 'vue';
 import { usePageStore } from '../stores/page';
 
-const amount = ref({
-  amount: ''
+const form = ref({
+  amount: '',
+  current_password: ''
 })
 const errors = ref('')
 const success = ref('')
-const password = ref('')
 const pageStore = usePageStore()
 
 const amountCurrency = computed(() => {
   errors.value = ''
-  if (!amount.value.amount) {
+  if (!form.value.amount) {
     return parseFloat(0).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})
   }
-  return parseFloat(amount.value.amount).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})
+  return parseFloat(form.value.amount).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})
 })
 
 async function handleClick() {
   errors.value = ''
-  if (!amount.value.amount) {
+  if (!form.value.amount) {
     errors.value = 'Digite algum valor antes de continuar'
   }
-  if (amount.value.amount < 0) {
+  if (form.value.amount < 0) {
     errors.value = 'Digite um valor positivo'
   } 
-  if (!password.value.length) {
+  if (!form.value.current_password) {
     errors.value = 'Digite sua senha'
-  } else {
-    await pageStore.verifyPassword(password.value)
-
-    if (!pageStore.passwordIsValid) {
-      errors.value = 'Senha incorreta'
-    }
   }
-  if ( pageStore.user.balance < amount.value.amount ) {
+  if ( pageStore.user.balance < form.value.amount ) {
     errors.value = 'Saldo insuficiente'
   }
 
@@ -89,7 +83,7 @@ async function handleClick() {
 }
 
 function handleConfirmClick(refs) {
-  axios.post('/api/v1/withdraw/', amount.value)
+  axios.post('/api/v1/withdraw/', form.value)
     .then((res) => {
       if (res.data.status === 200) {
         pageStore.user.balance = parseFloat(res.data.accountBalance).toFixed(2)
@@ -110,8 +104,8 @@ function handleConfirmClick(refs) {
   refs.click()
 
 function clearForm() {
-  amount.value.amount = ''
-  password.value = ''
+  form.value.amount = ''
+  form.value.current_password = ''
 }
 }
 </script>
