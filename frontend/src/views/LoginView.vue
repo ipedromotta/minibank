@@ -15,10 +15,10 @@
           <label for="floatingPassword">Senha</label>
         </div>
 
-        <p :class="`small pb-lg-2 ${errors.length? 'mb-0' : 'mb-5'}`"><a class="text-dark link" href="#!">Esqueceu sua senha?</a></p>
+        <p :class="`small pb-lg-2 ${errors.length? 'mb-0' : 'mb-5'}`"><RouterLink class="text-dark link" to="/esqueceu-senha">Esqueceu sua senha?</RouterLink></p>
 
         <div class="alert alert-danger" role="alert" v-if="errors.length">
-          <span v-for="error in errors" :key="error">{{ error }}</span>
+          <span v-for="error, index in errors" :key="index">{{ error }}</span>
         </div>
         
         <button class="w-100 btn btn-lg btn-dark" type="submit">Entrar</button>
