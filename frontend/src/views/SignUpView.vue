@@ -1,6 +1,6 @@
 <template>
   <div class="text-center body">
-    <main class="form-signin">
+    <main class="form-signup">
       <form class="space-between" @submit.prevent="onSubmit">
         <img class="mb-4" src="@/assets/logo.svg" alt="" width="150">
         <h1 class="h3 mb-3 fw-normal">Cadastre-se</h1>
@@ -30,8 +30,8 @@
           <label for="floatingPassword2">Confirme sua senha</label>
         </div>
 
-        <div class="alert alert-danger mt-3" role="alert" v-if="errors.length">
-          <span v-for="error in errors" :key="error">{{ error }}</span>
+        <div class="alert alert-danger" role="alert" v-if="errors.length">
+          <span v-for="error, index in errors" :key="index">{{ error }}</span>
         </div>
 
         <button :class="`w-100 btn btn-lg btn-dark ${errors.length?'mt-0': 'mt-5'}`" type="submit">Cadastrar</button>
@@ -101,7 +101,7 @@ async function onSubmit() {
   height: 100vh;
 }
 
-.form-signin {
+.form-signup {
   width: 100%;
   max-width: 330px;
   padding: 15px;
