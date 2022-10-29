@@ -40,21 +40,27 @@ def withdraw(request):
         user = None
         username = request.user
         amount = request.data.get('amount', None)
-        if amount and username:
+        current_password = request.data.get('current_password', None)
+        
+        if amount and username and current_password:
             user = CustomUser.objects.get(username=username)
-            if user.balance < abs(Decimal(amount)):
-                message = 'Saldo insuficiente'
-                status = statusEnum.HTTP_401_UNAUTHORIZED
+            if user.check_password(current_password):
+                if user.balance < abs(Decimal(amount)):
+                    message = 'Saldo insuficiente'
+                    status = statusEnum.HTTP_401_UNAUTHORIZED
+                else:
+                    user.balance -= abs(Decimal(amount))
+                    user.save()
+                    message = 'Saque realizado com sucesso'
+                    status = statusEnum.HTTP_200_OK
+                    
+                    Transactions().create_transaction(user, amount, 'withdraw')
             else:
-                user.balance -= abs(Decimal(amount))
-                user.save()
-                message = 'Saque realizado com sucesso'
-                status = statusEnum.HTTP_200_OK
-                
-                Transactions().create_transaction(user, amount, 'withdraw')
+                message = 'Senha incorreta'
+                status = statusEnum.HTTP_401_UNAUTHORIZED
         else:
-            message = 'Algo deu errado'
-            status = statusEnum.HTTP_500_INTERNAL_SERVER_ERROR
+            message = 'Preencha todos os campos'
+            status = statusEnum.HTTP_400_BAD_REQUEST
     except:
         message = 'Algo deu errado'
         status = statusEnum.HTTP_500_INTERNAL_SERVER_ERROR
@@ -71,30 +77,34 @@ def transfer(request):
         username = request.user
         username_to = request.data.get('username_to', None)
         amount = request.data.get('amount', None)
+        current_password = request.data.get('current_password', None)
         
-        if username and username_to and amount:
+        if username and username_to and amount and current_password:
             user = CustomUser.objects.get(username=username)
             user_to = CustomUser.objects.get(username=username_to)
-
-            if user.balance < abs(Decimal(amount)):
-                message = 'Saldo insuficiente'
-                status = statusEnum.HTTP_401_UNAUTHORIZED
+            if user.check_password(current_password):
+                if user.balance < abs(Decimal(amount)):
+                    message = 'Saldo insuficiente'
+                    status = statusEnum.HTTP_401_UNAUTHORIZED
+                else:
+                    with transaction.atomic():
+                        user.balance -= abs(Decimal(amount))
+                        user.save()
+                        
+                        user_to.balance += abs(Decimal(amount))
+                        user_to.save()
+                        
+                        Transactions().create_transaction(user, amount, 'transfer')
+                        Transactions().create_transaction(user_to, amount, 'deposit')
+                        
+                        message = 'Transferencia realizada com sucesso'
+                        status = statusEnum.HTTP_200_OK
             else:
-                with transaction.atomic():
-                    user.balance -= abs(Decimal(amount))
-                    user.save()
-                    
-                    user_to.balance += abs(Decimal(amount))
-                    user_to.save()
-                    
-                    Transactions().create_transaction(user, amount, 'transfer')
-                    Transactions().create_transaction(user_to, amount, 'deposit')
-                    
-                    message = 'Transferencia realizada com sucesso'
-                    status = statusEnum.HTTP_200_OK
+                message = 'Senha incorreta'
+                status = statusEnum.HTTP_401_UNAUTHORIZED
         else:
-            message = 'Algo deu errado'
-            status = statusEnum.HTTP_500_INTERNAL_SERVER_ERROR
+            message = 'Preencha todos os campos'
+            status = statusEnum.HTTP_400_BAD_REQUEST
     except:
         message = 'Algo deu errado' if user_to is not None else 'Usuario destino não existe'
         status = statusEnum.HTTP_500_INTERNAL_SERVER_ERROR
@@ -132,7 +142,7 @@ def alter_user(request):
             else:
                 return Response({"status": statusEnum.HTTP_401_UNAUTHORIZED, "response": "Senha incorreta"})
         else:
-            return Response({"status": statusEnum.HTTP_500_INTERNAL_SERVER_ERROR, "response": "Preencha todos os campos"})
+            return Response({"status": statusEnum.HTTP_400_BAD_REQUEST, "response": "Preencha todos os campos"})
         
     except:
         return Response({"status": statusEnum.HTTP_500_INTERNAL_SERVER_ERROR, "response": "Algo deu errado"})
