@@ -5,6 +5,7 @@ import LoginView from '@/views/LoginView.vue'
 import SignUpView from '@/views/SignUpView.vue'
 import BankStatementView from '@/views/BankStatementView.vue'
 import MyAccountView from '@/views/MyAccountView.vue'
+import ForgotPasswordView from '@/views/ForgotPasswordView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,14 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
+      meta: {
+        isLogin: true
+      }
+    },
+    {
+      path: '/esqueceu-senha',
+      name: 'esqueceu-senha',
+      component: ForgotPasswordView,
       meta: {
         isLogin: true
       }
