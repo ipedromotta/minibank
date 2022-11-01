@@ -1,3 +1,4 @@
+from tabnanny import verbose
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -13,6 +14,8 @@ class Transactions(models.Model):
     
     class Meta:
         ordering = ['-created_at',]
+        verbose_name = ("Transações")
+        verbose_name_plural = ("Transações")
         
     def __str__(self) -> str:
         return self.user.username

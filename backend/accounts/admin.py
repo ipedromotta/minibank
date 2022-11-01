@@ -4,6 +4,7 @@ from django.contrib.auth.admin import UserAdmin
 
 from .models import CustomUser, Transactions
 
+
 class CustomUserAdmin(UserAdmin):
     list_display = (
         'username', 'email', 'first_name', 'last_name', 'is_staff',
@@ -30,6 +31,13 @@ class CustomUserAdmin(UserAdmin):
         #     'fields': ('is_student', 'is_teacher', 'mailing_address')
         # })
     )
+    
+class TransactionsAdmin(admin.ModelAdmin):
+    model = Transactions
+    list_display = ('user', 'amount', 'type', 'created_at', )
+    search_fields = ('user__username', )
+    list_filter = ('type', 'created_at', )
+    
 
 admin.site.register(CustomUser, CustomUserAdmin)
-admin.site.register(Transactions)
+admin.site.register(Transactions, TransactionsAdmin)
