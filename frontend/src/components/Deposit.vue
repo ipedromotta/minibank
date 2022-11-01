@@ -54,6 +54,9 @@ const amountCurrency = computed(() => {
   if (!amount.value.amount) {
     return parseFloat(0).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})
   }
+  if (amount.value.amount > 50 ){
+    amount.value.amount = 50
+  }
   return parseFloat(amount.value.amount).toLocaleString('pt-br',{style: 'currency', currency: 'BRL'})
 })
 
