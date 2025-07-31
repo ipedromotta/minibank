@@ -1,0 +1,33 @@
+# version: '3.9'
+
+services:
+  web:
+    build:
+      context: .          # Pasta onde o Dockerfile está (backend/)
+      dockerfile: Dockerfile
+    image: ipedromotta/backend-minibank:1.0  # nome personalizado da imagem
+    container_name: backend-minibank          # nome personalizado do container
+    working_dir: /app
+    # volumes:
+      # - .:/app            # Código fonte montado dentro do container (útil no dev, em prod pode ser removido)
+      # - static_volume:/app/static  # monta um volume separado só para estáticos
+    environment:
+      - DEBUG=False       # Variáveis de ambiente para Django
+      - ALLOWED_HOSTS=localhost
+    expose:
+      - "8000"            # Porta interna exposta para ser usada pelo nginx
+    # depends_on:
+    #   - nginx             # Garante que o container nginx seja iniciado depois do web
+
+  nginx:
+    image: nginx:latest    # Usa a imagem oficial do nginx
+    ports:
+      - "80:80"            # Mapeia a porta 80 da máquina para o container
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf  # Monta o arquivo de configuração nginx dentro do container
+      # - ./static:/app/static  # monta a pasta estática para o nginx servir os arquivos diretamente
+    # depends_on:
+    #   - web                # Garante que o container web esteja rodando antes
+
+# volumes:
+#   static_volume:
