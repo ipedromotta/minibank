@@ -32,7 +32,7 @@ def deposit(request):
         message = 'Algo deu errado'
         status = statusEnum.HTTP_500_INTERNAL_SERVER_ERROR
     
-    return Response({"status": status, "response": message, "accountBalance": user.balance if user else None})
+    return Response({"response": message, "accountBalance": user.balance if user else None}, status=status)
 
 @api_view(['POST'])
 def withdraw(request):
@@ -65,7 +65,7 @@ def withdraw(request):
         message = 'Algo deu errado'
         status = statusEnum.HTTP_500_INTERNAL_SERVER_ERROR
                 
-    return Response({"status": status, "response": message, "accountBalance": user.balance if user else None})
+    return Response({"response": message, "accountBalance": user.balance if user else None}, status=status)
 
 @api_view(['POST'])
 # @authentication_classes([])
@@ -109,7 +109,7 @@ def transfer(request):
         message = 'Algo deu errado' if user_to is not None else 'Usuario destino não existe'
         status = statusEnum.HTTP_500_INTERNAL_SERVER_ERROR
     
-    return Response({"status": status, "response": message, "accountBalance": user.balance if user else None})
+    return Response({"response": message, "accountBalance": user.balance if user else None}, status=status)
     
 @api_view(['POST'])
 def get_transactions(request):
@@ -120,7 +120,7 @@ def get_transactions(request):
     transactions = Transactions.objects.filter(user=user, created_at__gte=f'{date} 00:00:00', created_at__lte=f'{date} 23:59:59')
     serializer = TransactionsSerializer(transactions, many=True)
     
-    return Response(serializer.data)
+    return Response(serializer.data, status=statusEnum.HTTP_200_OK)
 
 @api_view(['POST'])
 def alter_user(request):
@@ -138,11 +138,11 @@ def alter_user(request):
                 user.email = new_email
                 user.first_name = new_name
                 user.save()
-                return Response({"status": statusEnum.HTTP_200_OK, "response": "Usuario alterado com sucesso"})
+                return Response({"response": "Usuario alterado com sucesso"}, status=statusEnum.HTTP_200_OK)
             else:
-                return Response({"status": statusEnum.HTTP_401_UNAUTHORIZED, "response": "Senha incorreta"})
+                return Response({"response": "Senha incorreta"}, status=statusEnum.HTTP_401_UNAUTHORIZED)
         else:
-            return Response({"status": statusEnum.HTTP_400_BAD_REQUEST, "response": "Preencha todos os campos"})
+            return Response({"response": "Preencha todos os campos"}, status=statusEnum.HTTP_400_BAD_REQUEST)
         
     except:
-        return Response({"status": statusEnum.HTTP_500_INTERNAL_SERVER_ERROR, "response": "Algo deu errado"})
+        return Response({"response": "Algo deu errado"}, status=statusEnum.HTTP_500_INTERNAL_SERVER_ERROR)
