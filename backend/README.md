@@ -25,38 +25,35 @@
 ## 🖥️ Execução local
 Para iniciar o backend localmente, siga os passos abaixo:
 
-1. Ativar o ambiente virtual com Pipenv
+1. Ativar o ambiente virtual com uv
 
-    Se você ainda não possui o Pipenv instalado, instale-o com o comando:
+    Se você ainda não possui o uv instalado, instale-o com o comando:
     ```
-    pip install pipenv
+    pip install uv
     ```
-    Em seguida, navegue até o diretório backend do projeto e ative o ambiente virtual:
-    ```
-    cd backend
-    pipenv shell
-    ```
+
 2. Instalar as dependências
 
-    Com o ambiente virtual ativado, instale as dependências (incluindo as de desenvolvimento):
+    Navegue até o diretório backend do projeto, crie o ambiente virtual e instale as dependências:
     ```
-    pipenv install --dev
+    cd backend
+    uv venv
+    uv pip install -r requirements.txt
     ```
+
 3. Configurar o projeto Django
 
-    Crie as migrações do banco de dados com:
+    Crie e aplique as migrações do banco de dados:
     ```
-    python manage.py makemigrations
+    uv run python manage.py makemigrations
+    uv run python manage.py migrate
     ```
-    Aplique as migrações para criar as tabelas no banco:
-    ```
-    python manage.py migrate
-    ```
+
 4. Subir o servidor local
 
-    Agora que tudo está configurado, inicie o servidor com:
+    Inicie o servidor Django:
     ```
-    python manage.py runserver
+    uv run python manage.py runserver
     ```
 
 A API estará disponível em:
