@@ -9,31 +9,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Puxa o código do repo
+      # 1️⃣ Puxa o código do repositório
       - name: 🔍 Checkout código
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      # Configura Python 3.10 no runner
+      # 2️⃣ Configura o Python (pode ser 3.10 ou mais recente)
       - name: ⚙️ Setup Python 3.10
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      # Instala pipenv globalmente
-      - name: 📦 Instalar pipenv
-        run: pip install pipenv
+      # 3️⃣ Instala o UV (moderno substituto do pip)
+      - name: 📦 Instalar uv
+        run: pip install uv
 
-      # Instala dependências backend com pipenv (dentro da pasta backend)
+      # 4️⃣ Instala dependências do backend usando uv
       - name: 📦 Instalar dependências backend
         working-directory: ./backend
-        run: pipenv install --dev
+        run: |
+          uv venv
+          uv pip install -r requirements.txt
 
-      # Roda os testes Django dentro do ambiente pipenv
+      # 5️⃣ Roda testes Django com o uv (sem precisar ativar venv)
       - name: 🧪 Rodar testes Django
         working-directory: ./backend
-        run: pipenv run python manage.py test
+        run: |
+          uv run python manage.py test
 
-      # --- Frontend (opcional, ativar se quiser rodar testes frontend) ---
+      # --- Frontend (opcional) ---
       # - name: 📦 Instalar dependências frontend
       #   working-directory: ./frontend
       #   run: npm install
@@ -42,26 +45,26 @@ jobs:
       #   working-directory: ./frontend
       #   run: npm run test
 
-      # Login no Docker Hub (para push das imagens)
+      # 6️⃣ Login no Docker Hub
       - name: 🔐 Login no Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      # Build e push da imagem backend
+      # 7️⃣ Build e push da imagem backend
       - name: 🐳 Build e push - backend
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/meu-backend:latest ./backend
           docker push ${{ secrets.DOCKER_USERNAME }}/meu-backend:latest
 
-      # Build e push da imagem frontend
+      # 8️⃣ Build e push da imagem frontend
       - name: 🐳 Build e push - frontend
         run: |
           docker build -t ${{ secrets.DOCKER_USERNAME }}/meu-frontend:latest ./frontend
           docker push ${{ secrets.DOCKER_USERNAME }}/meu-frontend:latest
 
-      # Deploy via SSH (descomente e configure quando quiser)
+      # 9️⃣ Deploy via SSH (opcional)
       # - name: 🚀 Deploy no servidor
       #   uses: appleboy/ssh-action@v1.0.0
       #   with:
@@ -71,8 +74,6 @@ jobs:
       #     script: |
       #       docker pull ${{ secrets.DOCKER_USERNAME }}/meu-backend:latest
       #       docker pull ${{ secrets.DOCKER_USERNAME }}/meu-frontend:latest
-      #
       #       cd /home/ubuntu/meu-projeto
-      #
       #       docker-compose -f docker-compose.prod.yml down
       #       docker-compose -f docker-compose.prod.yml up -d --build
